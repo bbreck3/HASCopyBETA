@@ -1,0 +1,28 @@
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.config
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.pdb
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.xml
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.Resources.resources
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.vbproj.GenerateResource.Cache
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.xml
+c:\users\rob\documents\visual studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.pdb
+C:\Users\rob\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.HASCopyBETA.resources
+C:\Users\rob\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.manifest
+C:\Users\rob\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.application
+C:\Users\rob\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe.manifest
+C:\Users\rob\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.application
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.config
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.xml
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.pdb
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.manifest
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.application
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.pdb
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.xml
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.HASCopyBETA.resources
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.Resources.resources
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.vbproj.GenerateResource.Cache
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe.manifest
+C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.application
