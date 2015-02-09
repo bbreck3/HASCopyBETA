@@ -41,6 +41,7 @@ Public Class HASCopyBETA
     Dim filereader As StreamReader
     Dim dir_exc As String
     Dim list As String
+    Dim current_file As String
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim sourceDialog As FolderBrowserDialog = New FolderBrowserDialog
         Dim openFileDialog1 As OpenFileDialog = New OpenFileDialog
@@ -109,6 +110,8 @@ Public Class HASCopyBETA
 
 
         'bw.RunWorkerAsync()
+        BackgroundWorker1.WorkerSupportsCancellation = True
+        BackgroundWorker1.WorkerReportsProgress = True
         BackgroundWorker1.RunWorkerAsync()
 
         ' CopyDirectory(source, target)
@@ -199,17 +202,23 @@ Public Class HASCopyBETA
 
     Private Sub CopyDirectory(ByVal sourcePath As String, ByVal destPath As String)
 
-        'Does not work correctly ...
-        '  If Label1.Text = "None Selected" Or Label2.Text = "None Selected" Then
-        'MsgBox("Source or Destination not specified. \n Please specify a Source and a Destination.")
+      
 
-        ' End If
 
         If Not Directory.Exists(destPath) Then
             Directory.CreateDirectory(destPath)
         End If
         Try
+
+
+            ' For i = 0 To source_size
+
+
+
+
             For Each file1 As String In Directory.GetFiles(sourcePath)
+                current_file = file1
+
                 ' Label4.Text = file1.ToString
                 'Label4.Refresh()
 
@@ -217,37 +226,50 @@ Public Class HASCopyBETA
 
                 Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
                 File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
-                target_size = CountFiles(target, 0.0)
+                target_size = CountFiles(destPath, 0.0)
                 Label4.Text = file1.ToString
                 Label4.Refresh()
 
                 ' My.Computer.FileSystem.CopyFile(file1, dest, FileIO.UIOption.AllDialogs)
                 ' target_size = DirectorySize(destPath, True)
-                'temp = target_size
-                '  target_tot = target_tot + temp
+                temp = target_size
+                'target_tot = target_tot + temp
 
 
                 tot_prog = Math.Round((target_size / source_size), 2) * 100
-                ProgressBar1.Value = tot_prog
-                ' Dim test = ProgressBar1.Value
+                ' ProgressBar1.Value = tot_prog
+                BackgroundWorker1.ReportProgress(tot_prog)
 
-                Label5.Text = tot_prog.ToString()
+                Label5.Text = tot_prog & " % Complete"
+
+                System.Threading.Thread.Sleep(200)
                 Label5.Refresh()
 
+                ' Dim test = ProgressBar1.Value
+
+
+
             Next
+
+
+
 
             ' Use directly the sourcePath passed in, not the parent of that path
             For Each dir1 As String In Directory.GetDirectories(sourcePath)
-                dir_exc = dir1
+
                 Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
                 CopyDirectory(dir1, destdir)
             Next
+
+
             'Attempts to catch the error from any issue in copy a file ands it to a Text File
             'currently does not work
-        Catch e As Exception
+        Catch ex As Exception When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
 
-            list = list + dir_exc + Environment.NewLine
+
+            list = list + current_file + Environment.NewLine
             writer.WriteLine(list)
+
 
 
 
@@ -263,6 +285,8 @@ Public Class HASCopyBETA
             ' fs.Close()
 
         End Try
+
+
 
     End Sub
     Private Function CountFiles(InFolder As String, ByRef Result As Double)
@@ -338,18 +362,109 @@ Public Class HASCopyBETA
         Return Size
     End Function
 
-    Protected Overrides Sub OnLoad(ByVal e As EventArgs)
-        MyBase.OnLoad(e)
-
+    Protected Overrides Sub OnLoad(ByVal e1 As EventArgs)
+        MyBase.OnLoad(e1)
         Label8.Text = machine_name
+
+        'TO run parrelel or cross threads, needs something called delegates, to get by this the below is used: it basically tells the program not to check for it at all
+        Control.CheckForIllegalCrossThreadCalls = False
+        Label6.Visible = False
+        Label5.Text = tot_prog & " % Complete"
 
 
         '  Dim string_to_write As New StringBuilder()
         ' For Each txtName As String In Directory
     End Sub
 
-    Private Sub BackgroundWorker1_DoWork(sender As Object, e As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+    Private Sub BackgroundWorker1_DoWork(sender As Object, e2 As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+
         CopyDirectory(source, target)
-        Timer1.Start()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        '' any cleanup code go here
+        '' ensure that you close all open resources before exitting out of this Method.
+        '' try to skip off whatever is not desperately necessary if CancellationPending is True
+
+        '' set the e.Cancel to True to indicate to the RunWorkerCompleted that you cancelled out
+        ' If BackgroundWorker1.CancellationPending Then
+        'e.Cancel = True
+        ' BackgroundWorker1.ReportProgress(100, "Cancelled.")
+        '  End If
     End Sub
+
+    Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e2 As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
+
+        ProgressBar1.Value = e2.ProgressPercentage
+
+
+
+
+
+
+    End Sub
+    Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
+        MsgBox("Copy Complete")
+        writer.Close()
+
+
+    End Sub
+
+    'Empliments later....cause early termination of the background worker
+
+    ' Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
+    '' This event is fired when your BackgroundWorker exits.
+    '' It may have exitted Normally after completing its task, 
+    '' or because of Cancellation, or due to any Error.
+
+    '  If e2.Error IsNot Nothing Then
+    '' if BackgroundWorker terminated due to error
+    '   MessageBox.Show(e2.Error.Message)
+    '  Label1.Text = "Error occurred!"
+
+    ' ElseIf e2.Cancelled Then
+    '' otherwise if it was cancelled
+    '     MessageBox.Show("Task cancelled!")
+    '     Label1.Text = "Task Cancelled!"
+
+    '   Else
+    '' otherwise it completed normally
+    '       MessageBox.Show("Task completed!")
+    '      Label1.Text = "Error completed!"
+    '   End If
+    '
+    ' Button1.Enabled = True
+    ' Button2.Enabled = False
+    ' End Sub
+
+    ' Timer1.Start()
+
+    ' Private Sub Cancel_Click(sender As Object, e1 As EventArgs) Handles Button5.Click
+    '    Me.BackgroundWorker1.CancelAsync()
+
+    '   MsgBox("canceled")
+    'End Sub
+
+    Private Sub cancelAsyncButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
+
+        ' Cancel the asynchronous operation. 
+        Me.BackgroundWorker1.CancelAsync()
+
+        ' Disable the Cancel button.
+        'cancelAsyncButton.Enabled = False
+
+    End Sub 'cancelAsyncButton_Click
+
+
 End Class

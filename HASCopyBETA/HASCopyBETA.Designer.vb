@@ -38,6 +38,7 @@ Partial Class HASCopyBETA
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
+        Me.Button5 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Button1
@@ -60,7 +61,7 @@ Partial Class HASCopyBETA
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(545, 136)
+        Me.Button3.Location = New System.Drawing.Point(447, 136)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(75, 23)
         Me.Button3.TabIndex = 2
@@ -69,7 +70,7 @@ Partial Class HASCopyBETA
         '
         'Button4
         '
-        Me.Button4.Location = New System.Drawing.Point(626, 136)
+        Me.Button4.Location = New System.Drawing.Point(528, 136)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(75, 23)
         Me.Button4.TabIndex = 3
@@ -122,7 +123,7 @@ Partial Class HASCopyBETA
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(606, 91)
+        Me.Label5.Location = New System.Drawing.Point(640, 91)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(13, 13)
         Me.Label5.TabIndex = 9
@@ -131,7 +132,7 @@ Partial Class HASCopyBETA
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(639, 91)
+        Me.Label6.Location = New System.Drawing.Point(622, 54)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(62, 13)
         Me.Label6.TabIndex = 10
@@ -161,11 +162,21 @@ Partial Class HASCopyBETA
         'BackgroundWorker1
         '
         '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(609, 136)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(75, 23)
+        Me.Button5.TabIndex = 13
+        Me.Button5.Text = "Cancel"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
         'HASCopyBETA
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(708, 164)
+        Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Label8)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.Label6)
@@ -200,5 +211,6 @@ Partial Class HASCopyBETA
     Friend WithEvents Label7 As System.Windows.Forms.Label
     Friend WithEvents Label8 As System.Windows.Forms.Label
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
+    Friend WithEvents Button5 As System.Windows.Forms.Button
 
 End Class
