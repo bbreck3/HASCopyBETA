@@ -25,7 +25,7 @@ Public Class HASCopyBETA
     Dim srclist As List(Of String)
     Dim Trglist As List(Of String)
     Dim src As Integer
-    Dim tot_prog As Double
+    Dim tot_prog As Double = 0.0
 
     Dim trg_dir
     Dim src_dir
@@ -42,6 +42,7 @@ Public Class HASCopyBETA
     Dim dir_exc As String
     Dim list As String
     Dim current_file As String
+    Dim file_count As Double = 1.0
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim sourceDialog As FolderBrowserDialog = New FolderBrowserDialog
         Dim openFileDialog1 As OpenFileDialog = New OpenFileDialog
@@ -126,7 +127,7 @@ Public Class HASCopyBETA
 
     End Sub
 
-   
+
 
     Private Sub Reset_Click(sender As Object, e As EventArgs) Handles Button4.Click
 
@@ -202,7 +203,7 @@ Public Class HASCopyBETA
 
     Private Sub CopyDirectory(ByVal sourcePath As String, ByVal destPath As String)
 
-      
+
 
 
         If Not Directory.Exists(destPath) Then
@@ -218,7 +219,7 @@ Public Class HASCopyBETA
 
             For Each file1 As String In Directory.GetFiles(sourcePath)
                 current_file = file1
-
+                file_count = file_count + 1
                 ' Label4.Text = file1.ToString
                 'Label4.Refresh()
 
@@ -226,7 +227,9 @@ Public Class HASCopyBETA
 
                 Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
                 File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
-                target_size = CountFiles(destPath, 0.0)
+
+                'target_size = target_size + file_count
+
                 Label4.Text = file1.ToString
                 Label4.Refresh()
 
@@ -236,8 +239,8 @@ Public Class HASCopyBETA
                 'target_tot = target_tot + temp
 
 
-                tot_prog = Math.Round((target_size / source_size), 2) * 100
-                ' ProgressBar1.Value = tot_prog
+                tot_prog = Math.Round((file_count / source_size), 2) * 100
+                ProgressBar1.Value = tot_prog
                 BackgroundWorker1.ReportProgress(tot_prog)
 
                 Label5.Text = tot_prog & " % Complete"
@@ -269,7 +272,15 @@ Public Class HASCopyBETA
 
             list = list + current_file + Environment.NewLine
             writer.WriteLine(list)
+            file_count = file_count + 1
+            tot_prog = Math.Round((file_count / source_size), 2) * 100
+            ProgressBar1.Value = tot_prog
+            BackgroundWorker1.ReportProgress(tot_prog)
 
+            Label5.Text = tot_prog & " % Complete"
+
+            System.Threading.Thread.Sleep(200)
+            Label5.Refresh()
 
 
 
@@ -291,15 +302,12 @@ Public Class HASCopyBETA
     End Sub
     Private Function CountFiles(InFolder As String, ByRef Result As Double)
         Result += IO.Directory.GetFiles(InFolder).Count
-        Dim temp = ProgressBar1.Value
+        ' Dim temp = ProgressBar1.Value
 
         For Each f As String In IO.Directory.GetDirectories(InFolder)
             CountFiles(f, Result)
         Next
-        If temp = 15 Then
 
-            writer.Close()
-        End If
         'This is a problem...once the prog bar hits 100 percent it stays there and there there is an infinite msgbox loop
         'MsgBox("Copy Complete!")
         'Return Result
@@ -406,7 +414,8 @@ Public Class HASCopyBETA
 
     Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e2 As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
 
-        ProgressBar1.Value = e2.ProgressPercentage
+        ProgressBar1.Value = tot_prog
+
 
 
 
@@ -416,6 +425,7 @@ Public Class HASCopyBETA
     End Sub
     Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
         MsgBox("Copy Complete")
+        ''open pdf here
         writer.Close()
 
 
