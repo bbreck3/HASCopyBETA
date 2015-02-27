@@ -26,3 +26,17 @@ C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.Reso
 C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.vbproj.GenerateResource.Cache
 C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe.manifest
 C:\Users\breckenridrw\Desktop\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.application
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.config
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.xml
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.pdb
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe.manifest
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.application
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.exe
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.pdb
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\bin\Debug\HASCopyBETA.xml
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.HASCopyBETA.resources
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.Resources.resources
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.vbproj.GenerateResource.Cache
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.exe.manifest
+C:\Users\breckenridrw\Documents\Visual Studio 2013\Projects\HASCopyBETA\HASCopyBETA\obj\Debug\HASCopyBETA.application

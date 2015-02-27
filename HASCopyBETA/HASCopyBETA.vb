@@ -43,6 +43,9 @@ Public Class HASCopyBETA
     Dim list As String
     Dim current_file As String
     Dim file_count As Double = 1.0
+    Dim ex_file_count As Integer = 0
+    Dim verify_by_1 As Integer = 0
+
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim sourceDialog As FolderBrowserDialog = New FolderBrowserDialog
         Dim openFileDialog1 As OpenFileDialog = New OpenFileDialog
@@ -51,6 +54,8 @@ Public Class HASCopyBETA
             Label1.Text = sourceDialog.SelectedPath
             source = sourceDialog.SelectedPath
             source_size = CountFiles(source, 0.0)
+            Label11.Text = "Source Size: " & source_size
+            Label11.Refresh()
         End If
         If DialogResult.Cancel Then
             Return
@@ -73,6 +78,7 @@ Public Class HASCopyBETA
             target = targetDialog.SelectedPath
             filepath = target + "/" + machine_name + "_ERROR_LOG.txt"
             writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
+
             'fs = File.Create(filepath)
             'Dim info As Byte() = New UTF8Encoding(True).GetBytes("This is a test")
             'fs.Write(info, 0, info.Length)
@@ -212,13 +218,14 @@ Public Class HASCopyBETA
         Try
 
 
-            ' For i = 0 To source_size
+            ' ProgressBar1.Maximum = source_size
 
 
 
 
             For Each file1 As String In Directory.GetFiles(sourcePath)
                 current_file = file1
+
                 file_count = file_count + 1
                 ' Label4.Text = file1.ToString
                 'Label4.Refresh()
@@ -232,21 +239,35 @@ Public Class HASCopyBETA
 
                 Label4.Text = file1.ToString
                 Label4.Refresh()
-
+                'file_count = file_count + 1
                 ' My.Computer.FileSystem.CopyFile(file1, dest, FileIO.UIOption.AllDialogs)
                 ' target_size = DirectorySize(destPath, True)
                 temp = target_size
                 'target_tot = target_tot + temp
 
 
-                tot_prog = Math.Round((file_count / source_size), 2) * 100
+                tot_prog = ((file_count / source_size)) * 100
+
+                Label11.Text = "Source Size: " & source_size
+                Label11.Refresh()
+                'Math.Round((file_count / source_size), 2) * 100
+
                 ProgressBar1.Value = tot_prog
-                BackgroundWorker1.ReportProgress(tot_prog)
+                If ProgressBar1.Value = 95 Then
+                    MsgBox("Copy Complete")
+                    writer.Close()
+                End If
+                'This is a problem:
+                'the 
+                ' BackgroundWorker1.ReportProgress(tot_prog)
+
+                Label6.Text = "Total file count: " & file_count.ToString
+                Label6.Refresh()
 
                 Label5.Text = tot_prog & " % Complete"
-
-                System.Threading.Thread.Sleep(200)
                 Label5.Refresh()
+                System.Threading.Thread.Sleep(200)
+
 
                 ' Dim test = ProgressBar1.Value
 
@@ -265,24 +286,52 @@ Public Class HASCopyBETA
             Next
 
 
+            ' Next
             'Attempts to catch the error from any issue in copy a file ands it to a Text File
             'currently does not work
         Catch ex As Exception When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
+            verify_by_1 = verify_by_1 + 1
+            Label10.Text = "Verify count by one only: " & verify_by_1
+            Label10.Refresh()
 
+            ' MsgBox("file is is to long to copy: " + current_file)
+
+
+            ex_file_count = ex_file_count + 1
+            ' MsgBox(ex.ToString)
+            'MsgBox(current_file.ToString)
+            ' MsgBox(file_count)
+            'Label9.Text = ex_file_count.ToString
+            ' Label9.Refresh()
 
             list = list + current_file + Environment.NewLine
             writer.WriteLine(list)
-            file_count = file_count + 1
-            tot_prog = Math.Round((file_count / source_size), 2) * 100
-            ProgressBar1.Value = tot_prog
-            BackgroundWorker1.ReportProgress(tot_prog)
-
-            Label5.Text = tot_prog & " % Complete"
-
-            System.Threading.Thread.Sleep(200)
-            Label5.Refresh()
 
 
+
+            'ex_file_count = ex_file_count + 1
+
+            ''tot_prog = (((file_count + ex_file_count) / (source_size))) * 100
+            ' file_count = file_count + 1
+            Label9.Text = "Exception file count totatl: " & ex_file_count.ToString
+            Label9.Refresh()
+            ' Label6.Text = "Total file count: " & file_count.ToString
+            ' Label6.Refresh()
+
+            Label11.Text = "Source Size: " & source_size
+            Label11.Refresh()
+
+
+
+
+
+            '  tot_prog = (((file_count + ex_file_count) / (source_size))) * 100
+            'Math.Round((file_count / source_size), 2) * 100
+            ' ProgressBar1.Value = tot_prog
+            ' BackgroundWorker1.ReportProgress(tot_prog)
+
+
+            verify_by_1 = 0
 
             'My.Application.Log.WriteException(e, TraceEventType.Error, filepath & ".")
             ' IO.File.AppendAllText(filepath, String.Format("{0}{1}", Environment.NewLine, e.ToString()))
@@ -376,7 +425,7 @@ Public Class HASCopyBETA
 
         'TO run parrelel or cross threads, needs something called delegates, to get by this the below is used: it basically tells the program not to check for it at all
         Control.CheckForIllegalCrossThreadCalls = False
-        Label6.Visible = False
+        ' Label6.Visible = False
         Label5.Text = tot_prog & " % Complete"
 
 
@@ -385,6 +434,8 @@ Public Class HASCopyBETA
     End Sub
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e2 As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+        ' ProgressBar1.Maximum = source_size
+
 
         CopyDirectory(source, target)
 
@@ -412,24 +463,29 @@ Public Class HASCopyBETA
         '  End If
     End Sub
 
-    Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e2 As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
+    'Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e2 As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
 
-        ProgressBar1.Value = tot_prog
-
-
+    ' ProgressBar1.Value = tot_prog
 
 
 
 
 
-    End Sub
-    Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
-        MsgBox("Copy Complete")
-        ''open pdf here
-        writer.Close()
 
 
-    End Sub
+
+
+
+
+
+    ' End Sub
+    'Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
+    '  MsgBox("Copy Complete")
+    ''open pdf here
+    '  writer.Close()
+
+
+    ' End Sub
 
     'Empliments later....cause early termination of the background worker
 
@@ -477,4 +533,8 @@ Public Class HASCopyBETA
     End Sub 'cancelAsyncButton_Click
 
 
+
+    Private Sub Label11_Click(sender As Object, e As EventArgs) Handles Label11.Click
+
+    End Sub
 End Class
