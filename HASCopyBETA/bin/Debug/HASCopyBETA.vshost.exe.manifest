@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HASCopyBETA.exe" size="3444736">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HASCopyBETA.exe" size="3445248">
       <assemblyIdentity name="HASCopyBETA" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>1WNGnlJIvLWjvtv8pli7pRubOM798J6xT8WzfvTqitc=</dsig:DigestValue>
+        <dsig:DigestValue>J8jvtOmpXA30PSO7/FJ9n8VOH63TvAXi6YvANYfS9is=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

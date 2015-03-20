@@ -78,6 +78,9 @@ Public Class HASCopyBETA
             target = targetDialog.SelectedPath
             filepath = target + "/" + machine_name + "_ERROR_LOG.txt"
             writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
+            writer.WriteLine("**************************************************************")
+            writer.WriteLine("*                    HASCopyBETA Failed Copy Log              *")
+            writer.WriteLine("**************************************************************")
 
             'fs = File.Create(filepath)
             'Dim info As Byte() = New UTF8Encoding(True).GetBytes("This is a test")
@@ -246,14 +249,15 @@ Public Class HASCopyBETA
                 'target_tot = target_tot + temp
 
 
-                tot_prog = ((file_count / source_size)) * 100
+                tot_prog = Math.Round((file_count / source_size), 2) * 100
 
                 Label11.Text = "Source Size: " & source_size
                 Label11.Refresh()
                 'Math.Round((file_count / source_size), 2) * 100
 
                 ProgressBar1.Value = tot_prog
-                If ProgressBar1.Value = 95 Then
+                If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
+
                     MsgBox("Copy Complete")
                     writer.Close()
                 End If
