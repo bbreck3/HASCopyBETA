@@ -45,6 +45,11 @@ Public Class HASCopyBETA
     Dim file_count As Double = 1.0
     Dim ex_file_count As Integer = 0
     Dim verify_by_1 As Integer = 0
+    Dim timer As Integer = 60000
+    Dim failed_to_copy As String()
+    Dim failed_file_copy As IEnumerable(Of Integer)
+    Dim file_list As New ArrayList()
+
 
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim sourceDialog As FolderBrowserDialog = New FolderBrowserDialog
@@ -74,14 +79,25 @@ Public Class HASCopyBETA
 
         Dim targetDialog As FolderBrowserDialog = New FolderBrowserDialog
         If targetDialog.ShowDialog() = DialogResult.OK Then
+            ' While targetDialog.SelectedPath.Length > 170
+            'MsgBox("The selected path is too long. Please Choose a shorter path")
+            'targetDialog = New FolderBrowserDialog
+            'Label2.Text = "None Selected"
+            'Label2.Refresh()
+
+
+            'targetDialog.ShowDialog()
+
+
+
+            'End While
+
             Label2.Text = targetDialog.SelectedPath
             target = targetDialog.SelectedPath
             filepath = target + "/" + machine_name + "_ERROR_LOG.txt"
-            writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
-            writer.WriteLine("**************************************************************")
-            writer.WriteLine("*                    HASCopyBETA Failed Copy Log              *")
-            writer.WriteLine("**************************************************************")
 
+
+            'writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
             'fs = File.Create(filepath)
             'Dim info As Byte() = New UTF8Encoding(True).GetBytes("This is a test")
             'fs.Write(info, 0, info.Length)
@@ -146,6 +162,9 @@ Public Class HASCopyBETA
 
 
         target_size = 0
+        source_size = 0
+        Label9.Text = "Exception file count"
+
 
 
 
@@ -184,14 +203,7 @@ Public Class HASCopyBETA
 
 
         End Try
-        ' ProgressBar1.Increment(tot_prog)
-
-
-        'Label5.Text = ProgressBar1.Value
-
-
-        ' Label5.Refresh()
-
+       
 
         If ProgressBar1.Value = 100 Then
             Timer1.Stop()
@@ -214,6 +226,14 @@ Public Class HASCopyBETA
 
 
 
+        Dim srcInfo As New DirectoryInfo(source)
+        Dim src As Long = DirectorySize(srcInfo, True)
+        'MsgBox(src)
+
+        Dim trgInfo As New DirectoryInfo(target)
+        Dim trg As Long = DirectorySize(srcInfo, True)
+        'MsgBox(trg)
+
 
         If Not Directory.Exists(destPath) Then
             Directory.CreateDirectory(destPath)
@@ -221,150 +241,180 @@ Public Class HASCopyBETA
         Try
 
 
-            ' ProgressBar1.Maximum = source_size
-
-
-
-
-            For Each file1 As String In Directory.GetFiles(sourcePath)
-                current_file = file1
-
-                file_count = file_count + 1
-                ' Label4.Text = file1.ToString
-                'Label4.Refresh()
-
-
-
-                Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
-                File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
-
-                'target_size = target_size + file_count
-
-                Label4.Text = file1.ToString
-                Label4.Refresh()
-                'file_count = file_count + 1
-                ' My.Computer.FileSystem.CopyFile(file1, dest, FileIO.UIOption.AllDialogs)
-                ' target_size = DirectorySize(destPath, True)
-                temp = target_size
-                'target_tot = target_tot + temp
-
-
-                tot_prog = Math.Round((file_count / source_size), 2) * 100
-
-                Label11.Text = "Source Size: " & source_size
-                Label11.Refresh()
-                'Math.Round((file_count / source_size), 2) * 100
-
-                ProgressBar1.Value = tot_prog
-                If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
-
-                    MsgBox("Copy Complete")
-                    writer.Close()
-                End If
-                'This is a problem:
-                'the 
-                ' BackgroundWorker1.ReportProgress(tot_prog)
-
-                Label6.Text = "Total file count: " & file_count.ToString
-                Label6.Refresh()
-
-                Label5.Text = tot_prog & " % Complete"
-                Label5.Refresh()
-                System.Threading.Thread.Sleep(200)
-
-
-                ' Dim test = ProgressBar1.Value
-
-
-
-            Next
-
-
-
 
             ' Use directly the sourcePath passed in, not the parent of that path
             For Each dir1 As String In Directory.GetDirectories(sourcePath)
-
                 Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
                 CopyDirectory(dir1, destdir)
             Next
 
 
-            ' Next
+
+          
+
+
+
+
+            For Each file1 As String In Directory.GetFiles(sourcePath)
+
+
+                current_file = file1
+                file_count = file_count + 1
+                Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
+                File.Copy(file1, dest, True)  ' Added True here to force the an overwrite 
+
+                Label4.Text = file1.ToString
+                Label4.Refresh()
+
+                Label6.Text = "File Count:" & file_count.ToString
+                Label6.Refresh()
+
+                tot_prog = Math.Round((file_count / source_size), 2) * 100
+
+                ProgressBar1.Value = tot_prog
+
+                Label5.Text = tot_prog.ToString() & "Percent Complete"
+                Label5.Refresh()
+
+                Label11.Text = "source size: " & source_size
+                Label11.Refresh()
+            Next
+
+
+
+
+            ' For Each dir1 As String In Directory.GetDirectories(sourcePath)
+
+            'Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
+            'CopyDirectory(dir1, destdir)
+
+
+
+            '            Next
+
+
+
+
+
+
+            ' ProgressBar1.Maximum = source_size
+
+
+
+
+            'For Each file1 As String In Directory.GetFiles(sourcePath)
+            '  file_count = CountFiles(target, 0.0)
+
+            'current_file = file1
+
+
+
+            'file_count = file_count + 1
+
+
+
+            'Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
+
+            'File.Copy(file1, dest)  ' Added True here to force the an overwrite
+            ' file_list.Add(file1)
+            'Label4.Text = file1.ToString
+            'Label4.Refresh()
+
+            'Label6.Text = "File Count:" & file_count.ToString
+            'Label6.Refresh()
+
+
+
+
+
+            'tot_prog = Math.Round((file_count / source_size), 2) * 100
+
+            'ProgressBar1.Value = tot_prog
+
+
+
+            'Label5.Text = tot_prog.ToString() & "Percent Complete"
+            'Label5.Refresh()
+
+            'Label11.Text = "source size: " & source_size
+            'Label11.Refresh()
+
+
+
+            'If (ProgressBar1.Value = 80) Then
+
+            ' file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
+            ' If ((source_size = file_count) Or (source_size = (file_count + ex_file_count))) Then
+            ' If (ProgressBar1.Value = 100) Then
+            'MsgBox("Copy Complete")
+            'writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
+            'writer.WriteLine("**************************************************************")
+            'writer.WriteLine("*                    HASCopyBETA Failed Copy Log              *")
+            'writer.WriteLine("**************************************************************")
+            'writer.WriteLine(list)
+            'writer.Close()
+            'End If
+
+
+            'Next
+
+
+
+
+            ' Use directly the sourcePath passed in, not the parent of that path
+
             'Attempts to catch the error from any issue in copy a file ands it to a Text File
             'currently does not work
-        Catch ex As Exception When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
-            verify_by_1 = verify_by_1 + 1
-            Label10.Text = "Verify count by one only: " & verify_by_1
-            Label10.Refresh()
-
-            ' MsgBox("file is is to long to copy: " + current_file)
+        Catch ex As Exception When TypeOf ex Is PathTooLongException OrElse TypeOf ex Is IOException OrElse TypeOf ex Is NullReferenceException
+            MsgBox(ex.ToString())
+            'MsgBox(current_file.ToString())
 
 
             ex_file_count = ex_file_count + 1
-            ' MsgBox(ex.ToString)
-            'MsgBox(current_file.ToString)
-            ' MsgBox(file_count)
-            'Label9.Text = ex_file_count.ToString
-            ' Label9.Refresh()
-
+            Label9.Text = ex_file_count.ToString()
             list = list + current_file + Environment.NewLine
-            writer.WriteLine(list)
-
-
-
-            'ex_file_count = ex_file_count + 1
-
-            ''tot_prog = (((file_count + ex_file_count) / (source_size))) * 100
-            ' file_count = file_count + 1
-            Label9.Text = "Exception file count totatl: " & ex_file_count.ToString
-            Label9.Refresh()
-            ' Label6.Text = "Total file count: " & file_count.ToString
-            ' Label6.Refresh()
-
-            Label11.Text = "Source Size: " & source_size
-            Label11.Refresh()
+            ' writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
+            'writer.WriteLine(list)
+            ' writer.Close()
 
 
 
 
-
-            '  tot_prog = (((file_count + ex_file_count) / (source_size))) * 100
-            'Math.Round((file_count / source_size), 2) * 100
-            ' ProgressBar1.Value = tot_prog
-            ' BackgroundWorker1.ReportProgress(tot_prog)
-
-
-            verify_by_1 = 0
-
-            'My.Application.Log.WriteException(e, TraceEventType.Error, filepath & ".")
-            ' IO.File.AppendAllText(filepath, String.Format("{0}{1}", Environment.NewLine, e.ToString()))
-
-
-
-
-            'MsgBox(e)
             'Dim error_file As Byte() = New UTF8Encoding(True).GetBytes(file1.ToString())
             'fs.Write(error_file, 0, error_file.Length)
-            ' fs.Close()
+
 
         End Try
 
 
 
     End Sub
+
+    Private Function DirectorySize(ByVal dInfo As DirectoryInfo, _
+   ByVal includeSubDir As Boolean) As Long
+        ' Enumerate all the files
+        Dim totalSize As Long = dInfo.EnumerateFiles() _
+          .Sum(Function(file) file.Length)
+
+        ' If Subdirectories are to be included
+        If includeSubDir Then
+            ' Enumerate all sub-directories
+            totalSize += dInfo.EnumerateDirectories() _
+             .Sum(Function(dir) DirectorySize(dir, True))
+        End If
+        Return totalSize
+    End Function
+
+
+
     Private Function CountFiles(InFolder As String, ByRef Result As Double)
         Result += IO.Directory.GetFiles(InFolder).Count
-        ' Dim temp = ProgressBar1.Value
+
 
         For Each f As String In IO.Directory.GetDirectories(InFolder)
             CountFiles(f, Result)
         Next
 
-        'This is a problem...once the prog bar hits 100 percent it stays there and there there is an infinite msgbox loop
-        'MsgBox("Copy Complete!")
-        'Return Result
-        'End If
 
 
         Return Result
@@ -433,24 +483,16 @@ Public Class HASCopyBETA
         Label5.Text = tot_prog & " % Complete"
 
 
-        '  Dim string_to_write As New StringBuilder()
-        ' For Each txtName As String In Directory
     End Sub
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e2 As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
         ' ProgressBar1.Maximum = source_size
 
 
+
+
+
         CopyDirectory(source, target)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -539,6 +581,10 @@ Public Class HASCopyBETA
 
 
     Private Sub Label11_Click(sender As Object, e As EventArgs) Handles Label11.Click
+
+    End Sub
+
+    Private Sub Label9_Click(sender As Object, e As EventArgs) Handles Label9.Click
 
     End Sub
 End Class
