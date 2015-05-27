@@ -188,9 +188,9 @@ Partial Class HASCopyBETA
         Me.Label10.AutoSize = True
         Me.Label10.Location = New System.Drawing.Point(525, 35)
         Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(126, 13)
+        Me.Label10.Size = New System.Drawing.Size(61, 13)
         Me.Label10.TabIndex = 15
-        Me.Label10.Text = "Verify count by one only: "
+        Me.Label10.Text = "Target Size"
         '
         'Label11
         '
