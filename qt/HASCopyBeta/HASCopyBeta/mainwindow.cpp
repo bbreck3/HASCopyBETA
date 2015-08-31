@@ -8,6 +8,8 @@
 static bool copyRecursively(const QString &srcFilePath,
                             const QString &tgtFilePath);
 
+static void copyPath(QString src, QString dst);
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -35,6 +37,7 @@ void MainWindow::on_pushButton_clicked()
 //Select Destination
 void MainWindow::on_pushButton_2_clicked()
 {
+    //QMessageBox::information(this,"Title", "Message");
     target = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                                  "/home",
                                                  QFileDialog::ShowDirsOnly
@@ -47,14 +50,17 @@ void MainWindow::on_pushButton_2_clicked()
 
 
 
-
+//start copy
 void MainWindow::on_pushButton_3_clicked()
 {
-    copyRecursively(source,target);
+
+    //copyRecursively(source,target);
+     copyPath(source,target);
 }
 
 //https://qt.gitorious.org/qt-creator/qt-creator/source/1a37da73abb60ad06b7e33983ca51b266be5910e:src/app/main.cpp#L13-189
 // taken from utils/fileutils.cpp. We can not use utils here since that depends app_version.h.
+
 static bool copyRecursively(const QString &srcFilePath,
                             const QString &tgtFilePath)
 {
@@ -79,4 +85,23 @@ static bool copyRecursively(const QString &srcFilePath,
             return false;
     }
     return true;
+}
+
+static void copyPath(QString src, QString dst)
+{
+
+    QDir dir(src);
+    if (! dir.exists())
+        return;
+
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src+ QDir::separator() + d, dst_path);
+    }
+
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+
 }

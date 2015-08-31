@@ -33,15 +33,14 @@ QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
 QT_MOC_LITERAL(1, 11, 21), // "on_pushButton_clicked"
 QT_MOC_LITERAL(2, 33, 0), // ""
 QT_MOC_LITERAL(3, 34, 23), // "on_pushButton_2_clicked"
-QT_MOC_LITERAL(4, 58, 30), // "on_label_windowIconTextChanged"
-QT_MOC_LITERAL(5, 89, 8), // "iconText"
-QT_MOC_LITERAL(6, 98, 23) // "on_pushButton_3_clicked"
+QT_MOC_LITERAL(4, 58, 23), // "on_pushButton_3_clicked"
+QT_MOC_LITERAL(5, 82, 30), // "on_label_windowIconTextChanged"
+QT_MOC_LITERAL(6, 113, 8) // "iconText"
 
     },
     "MainWindow\0on_pushButton_clicked\0\0"
-    "on_pushButton_2_clicked\0"
-    "on_label_windowIconTextChanged\0iconText\0"
-    "on_pushButton_3_clicked"
+    "on_pushButton_2_clicked\0on_pushButton_3_clicked\0"
+    "on_label_windowIconTextChanged\0iconText"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,14 +60,14 @@ static const uint qt_meta_data_MainWindow[] = {
  // slots: name, argc, parameters, tag, flags
        1,    0,   34,    2, 0x08 /* Private */,
        3,    0,   35,    2, 0x08 /* Private */,
-       4,    1,   36,    2, 0x08 /* Private */,
-       6,    0,   39,    2, 0x08 /* Private */,
+       4,    0,   36,    2, 0x08 /* Private */,
+       5,    1,   37,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,    5,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,    6,
 
        0        // eod
 };
