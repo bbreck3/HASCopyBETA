@@ -45,8 +45,7 @@ Public Class HASCopyBETA
     Dim file_count As Double = 1.0
     Dim ex_file_count As Integer = 0
     Dim verify_by_1 As Integer = 0
-    Dim excludedFiles = New List(Of String)
-   
+
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim sourceDialog As FolderBrowserDialog = New FolderBrowserDialog
         Dim openFileDialog1 As OpenFileDialog = New OpenFileDialog
@@ -64,8 +63,7 @@ Public Class HASCopyBETA
 
 
 
-        '   source_size = CountFiles(source, 0.0)
-        ' DirectorySize(source, True)
+       
 
 
     End Sub
@@ -79,10 +77,10 @@ Public Class HASCopyBETA
             target = targetDialog.SelectedPath
             filepath = target + "/" + machine_name + "_ERROR_LOG.txt"
             writer = New StreamWriter(filepath, True, System.Text.Encoding.ASCII)
+            writer.WriteLine("**************************************************************")
+            writer.WriteLine("*                    HASCopyBETA Data Migration Report        *")
+            writer.WriteLine("**************************************************************")
 
-            writer.WriteLine("**************************************************************")
-            writer.WriteLine("*                    HASCopyBETA Failed Copy Log             *")
-            writer.WriteLine("**************************************************************")
             'fs = File.Create(filepath)
             'Dim info As Byte() = New UTF8Encoding(True).GetBytes("This is a test")
             'fs.Write(info, 0, info.Length)
@@ -94,74 +92,34 @@ Public Class HASCopyBETA
 
 
 
-        ' Dim file_writer As New System.IO.StreamWriter(filepath)
-        'file_writer.WriteLine("This is a test")
-        'target_size = DirectorySize(target, True)
 
 
     End Sub
 
     Private Sub Start_Click(sender As Object, e As EventArgs) Handles Button3.Click
         ' Process.Start("CMD", "/c cd  " + source + " & start cmd.exe /c Robocopy " + """" + source + """" + " " + """" + target + """" + " /S") '" /LOG+:log.txt" + " /S")
-        'target_size = DirectorySize(target, True)
-        'While target_size IsNot source_size
-        ' temp = target_size
-        'target_tot = target_tot + temp
-        ' tot_prog = Math.Round(target_size)
 
-        'temp = 0
-        'target_size = DirectorySize(target, True)
-        'tot_prog = Math.Round(target_size / source_size)
-        'Label5.Text = tot_prog.ToString()
-        'Label5.Refresh()
-        'End While
-
-
-        'ProgressBar1.Style = ProgressBarStyle.Continuous
-
-
-        'bw.RunWorkerAsync()
         BackgroundWorker1.WorkerSupportsCancellation = True
         BackgroundWorker1.WorkerReportsProgress = True
         BackgroundWorker1.RunWorkerAsync()
 
-        ' CopyDirectory(source, target)
-        ' My.Computer.FileSystem.CopyFile(source)
-
-
-
-
-
-
-
-
     End Sub
 
-
+   
 
     Private Sub Reset_Click(sender As Object, e As EventArgs) Handles Button4.Click
 
         Label1.Text = "None Specified"
         Label2.Text = "None Specified"
         ProgressBar1.Value = 0
-        tot_prog = 0
-
 
         target_size = 0
-
-
 
         Label5.Text = target_size.ToString()
 
         Label5.Refresh()
         Label4.Text = "..."
         Label4.Refresh()
-
-
-
-
-
-
     End Sub
 
     Private Sub ProgressBar1_Click(sender As Object, e As EventArgs) Handles ProgressBar1.Click
@@ -170,37 +128,63 @@ Public Class HASCopyBETA
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
 
+    End Sub
 
-        'trg_dir = New IO.DirectoryInfo(target)
-        'src_dir = New IO.DirectoryInfo(source)
-        Try
+   
 
 
-            'tot_prog = (trg_dir.GetFiles.Length / src_dir.GetFiles.Length)
-
+    
 
 
 
-        Catch ex As Exception
-            ' MsgBox(src_dir.FullName())
+    ' Usage:
+    ' Copy Recursive with Overwrite if exists.
+    ' RecursiveDirectoryCopy("C:\Data", "D:\Data", True, True)
+    ' Copy Recursive without Overwriting.
+    ' RecursiveDirectoryCopy("C:\Data", "D:\Data", True, False)
+    ' Copy this directory Only. Overwrite if exists.
+    ' RecursiveDirectoryCopy("C:\Data", "D:\Data", False, True)
+    ' Copy this directory only without overwriting.
+    ' RecursiveDirectoryCopy("C:\Data", "D:\Data", False, False)
 
+    ' Recursively copy all files and subdirectories from the specified source to the specified 
+    ' destination.
+    Private Shared Sub DirectoryCopy( _
+        ByVal sourceDirName As String, _
+        ByVal destDirName As String, _
+        ByVal copySubDirs As Boolean)
 
-        End Try
-        ' ProgressBar1.Increment(tot_prog)
+        ' Get the subdirectories for the specified directory. 
+        Dim dir As DirectoryInfo = New DirectoryInfo(sourceDirName)
+        Dim dirs As DirectoryInfo() = dir.GetDirectories()
 
+        If Not dir.Exists Then
+            Throw New DirectoryNotFoundException( _
+                "Source directory does not exist or could not be found: " _
+                + sourceDirName)
+        End If
 
-        'Label5.Text = ProgressBar1.Value
+        ' If the destination directory doesn't exist, create it. 
+        If Not Directory.Exists(destDirName) Then
+            Directory.CreateDirectory(destDirName)
+        End If
+        ' Get the files in the directory and copy them to the new location. 
+        Dim files As FileInfo() = dir.GetFiles()
+        For Each file In files
+            Dim temppath As String = Path.Combine(destDirName, file.Name)
+            file.CopyTo(temppath, False)
+        Next file
 
-
-        ' Label5.Refresh()
-
-
-        If ProgressBar1.Value = 100 Then
-            Timer1.Stop()
-            'Form2.Show()
-
+        ' If copying subdirectories, copy them and their contents to new location. 
+        If copySubDirs Then
+            For Each subdir In dirs
+                Dim temppath As String = Path.Combine(destDirName, subdir.Name)
+                DirectoryCopy(subdir.FullName, temppath, copySubDirs)
+            Next subdir
         End If
     End Sub
+
+
 
 
 
@@ -213,109 +197,123 @@ Public Class HASCopyBETA
 
 
     Private Sub CopyDirectory(ByVal sourcePath As String, ByVal destPath As String)
-        excludedFiles.add("Thumbs.db")
-
-
-
+        '   This test worked
+        '   Test 1: was a test of directory size that should have copied 100% of the data succfully:: It did:: copied data size == source data size
+        '   Test 2: was test of a directory size that should not a have copied 100% files correctly, ie; the were paths tha where > than 255 character in length
+        '   |_>results: source data size:: 347MB ::: copied directory size:: 87MB. 
+        '
+        '   Next Steps: ensure that progress bar and files count are accurate
+        '               Correctly output failed files to a log
+        '               Print the log and convert to PDF when complete
+        '               Clean up other minor things
+        '       ***look into runtime****: 347 MB took ~5 MINS:::to slow
+        '
 
         If Not Directory.Exists(destPath) Then
             Directory.CreateDirectory(destPath)
         End If
         Try
+            For Each dir1 As String In Directory.GetDirectories(sourcePath)
 
 
 
+                Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
 
+
+                If destdir.Length > 240 Then
+
+
+                    For Each file1 As String In Directory.GetFiles(dir1)
+                        'Add file to failed copy list__> to ling to be a successful copy
+
+                        file_count = file_count + 1
+                        Label10.Text = file_count
+                        Label10.Refresh()
+                    Next
+
+
+                End If
+                CopyDirectory(dir1, destdir)
+            Next
 
 
             For Each file1 As String In Directory.GetFiles(sourcePath)
                 file_count = file_count + 1
-
-
-               
-
-                '
-                '
-                '       Issue with a file called "Thumbs.db"
-                '       It will not copy thus halting the copy proccess....need a work around...the below does not seem to be working
-                '
-                '
-
+                Label10.Text = file_count
+                Label10.Refresh()
                 Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
-                ' If excludedFiles.IndoxOf("Thumbs.db", _
-                'StringComparison.CurrentCultureIgnoreCase) <> -1 Then
-                '   ' Added True here to force the an overwrite
-                ' End If
+                If dest.Length > 240 Then
+                    file_count = file_count + 1
+                    Label10.Text = file_count
+                    Label10.Refresh()
 
+                End If
 
-                'target_size = target_size + file_count
-                File.Copy(file1, dest, True)
+                File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
                 Label4.Text = file1.ToString
                 Label4.Refresh()
-               
-
-
-
-
+                temp = target_size
                 tot_prog = Math.Round((file_count / source_size), 2) * 100
 
-                Label11.Text = "file_count: " & file_count
-
-
-
-
+                Label11.Text = "Source Size: " & source_size
                 Label11.Refresh()
                 ProgressBar1.Value = tot_prog
-
-                If ((ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size)) Then
-
+                If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
                     MsgBox("Copy Complete")
                     writer.Close()
+                    'output the failed files to document
                 End If
-               
                 Label6.Text = "Total file count: " & file_count.ToString
                 Label6.Refresh()
 
                 Label5.Text = tot_prog & " % Complete"
                 Label5.Refresh()
                 System.Threading.Thread.Sleep(200)
+
+
+
+
+
+
             Next
 
 
 
 
-            ' Use directly the sourcePath passed in, not the parent of that path
-            For Each dir1 As String In Directory.GetDirectories(sourcePath)
-
-                Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
-                CopyDirectory(dir1, destdir)
-            Next
 
 
             ' Next
             'Attempts to catch the error from any issue in copy a file ands it to a Text File
             'currently does not work
-        Catch ex As Exception When TypeOf ex Is PathTooLongException ' NullReferenceException OrElse TypeOf ex Is PathTooLongException
-
+        Catch ex As Exception 'When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
+            ' verify_by_1 = verify_by_1 + 1
+            ' Label10.Text = "Verify count by one only: " & verify_by_1
+            ' Label10.Refresh()
+            file_count = file_count + 1
+            Label10.Text = file_count
             Label10.Refresh()
 
 
 
-            ex_file_count = ex_file_count + 1
-            tot_prog = tot_prog + 1
-            ProgressBar1.Value = tot_prog
+            ' ex_file_count = ex_file_count + 1
 
-            list = list + current_file + Environment.NewLine
-            writer.WriteLine(list)
+            'list = list + current_file + Environment.NewLine
+            'writer.WriteLine(list)
 
 
 
-            Label9.Text = "Exception file count totatl: " & ex_file_count.ToString
-            Label9.Refresh()
-            
 
-            Label11.Text = "Source Size: " & source_size
-            Label11.Refresh()
+            'Label9.Text = "Exception file count totatl: " & ex_file_count.ToString
+            ' Label9.Refresh()
+
+
+            'Label11.Text = "Source Size: " & source_size
+            'Label11.Refresh()
+
+
+
+
+
 
 
 
@@ -323,10 +321,6 @@ Public Class HASCopyBETA
 
             'My.Application.Log.WriteException(e, TraceEventType.Error, filepath & ".")
             ' IO.File.AppendAllText(filepath, String.Format("{0}{1}", Environment.NewLine, e.ToString()))
-
-
-
-
             'MsgBox(e)
             'Dim error_file As Byte() = New UTF8Encoding(True).GetBytes(file1.ToString())
             'fs.Write(error_file, 0, error_file.Length)
@@ -339,7 +333,7 @@ Public Class HASCopyBETA
     End Sub
     Private Function CountFiles(InFolder As String, ByRef Result As Double)
         Result += IO.Directory.GetFiles(InFolder).Count
-        ' Dim temp = ProgressBar1.Value
+
 
         For Each f As String In IO.Directory.GetDirectories(InFolder)
             CountFiles(f, Result)
@@ -361,12 +355,10 @@ Public Class HASCopyBETA
 
     Private Function DirectorySize(ByVal sPath As String, ByVal bRecursive As Boolean) As Double
 
-        'Dim lngNumberOfDirectories As Long
+
         Dim lngNumberOfDirectories As Double
         Dim Size As Long = 0
-
         Dim diDir As New DirectoryInfo(sPath)
-
         Try
 
             Dim fil As FileInfo
@@ -395,12 +387,11 @@ Public Class HASCopyBETA
 
         Catch ex As System.IO.FileNotFoundException
 
-            ' File not found. Take no action
+
 
         Catch exx As Exception
 
-            ' Another error occurred
-
+         
             Return 0
 
         End Try
@@ -417,29 +408,13 @@ Public Class HASCopyBETA
         Label5.Text = tot_prog & " % Complete"
 
 
-        '  Dim string_to_write As New StringBuilder()
-        ' For Each txtName As String In Directory
+      
     End Sub
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e2 As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
-        ' ProgressBar1.Maximum = source_size
-
-
+        'Process.Start("CMD", "/c cd  " + source + " & start cmd.exe /c Robocopy " + """" + source + """" + " " + """" + target + """" + " /LOG+:log.txt" + " /S /TEE")
         CopyDirectory(source, target)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        'Copy(source, target)
         '' any cleanup code go here
         '' ensure that you close all open resources before exitting out of this Method.
         '' try to skip off whatever is not desperately necessary if CancellationPending is True
@@ -450,66 +425,13 @@ Public Class HASCopyBETA
         ' BackgroundWorker1.ReportProgress(100, "Cancelled.")
         '  End If
     End Sub
-
-    'Private Sub BackgroundWorker1_ProgressChanged(sender As Object, e2 As System.ComponentModel.ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
-
-    ' ProgressBar1.Value = tot_prog
+    Private Sub bw_ProgressChanged(ByVal sender As Object, ByVal e As ProgressChangedEventArgs) Handles BackgroundWorker1.ProgressChanged
 
 
 
-
-
-
-
-
-
-
-
-
-    ' End Sub
-    'Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
-    '  MsgBox("Copy Complete")
-    ''open pdf here
-    '  writer.Close()
-
-
-    ' End Sub
-
-    'Empliments later....cause early termination of the background worker
-
-    ' Private Sub BackgroundWorker1_RunWorkerCompleted(sender As Object, e2 As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
-    '' This event is fired when your BackgroundWorker exits.
-    '' It may have exitted Normally after completing its task, 
-    '' or because of Cancellation, or due to any Error.
-
-    '  If e2.Error IsNot Nothing Then
-    '' if BackgroundWorker terminated due to error
-    '   MessageBox.Show(e2.Error.Message)
-    '  Label1.Text = "Error occurred!"
-
-    ' ElseIf e2.Cancelled Then
-    '' otherwise if it was cancelled
-    '     MessageBox.Show("Task cancelled!")
-    '     Label1.Text = "Task Cancelled!"
-
-    '   Else
-    '' otherwise it completed normally
-    '       MessageBox.Show("Task completed!")
-    '      Label1.Text = "Error completed!"
-    '   End If
-    '
-    ' Button1.Enabled = True
-    ' Button2.Enabled = False
-    ' End Sub
-
-    ' Timer1.Start()
-
-    ' Private Sub Cancel_Click(sender As Object, e1 As EventArgs) Handles Button5.Click
-    '    Me.BackgroundWorker1.CancelAsync()
-
-    '   MsgBox("canceled")
-    'End Sub
-
+      
+    End Sub
+  
     Private Sub cancelAsyncButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
 
         ' Cancel the asynchronous operation. 
@@ -518,7 +440,7 @@ Public Class HASCopyBETA
         ' Disable the Cancel button.
         'cancelAsyncButton.Enabled = False
 
-    End Sub 'cancelAsyncButton_Click
+    End Sub
 
 
 
