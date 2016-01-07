@@ -40,7 +40,6 @@ Partial Class HASCopyBETA
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.Button5 = New System.Windows.Forms.Button()
         Me.Label9 = New System.Windows.Forms.Label()
-        Me.Label10 = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
@@ -179,18 +178,9 @@ Partial Class HASCopyBETA
         Me.Label9.AutoSize = True
         Me.Label9.Location = New System.Drawing.Point(525, 9)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(103, 13)
+        Me.Label9.Size = New System.Drawing.Size(51, 13)
         Me.Label9.TabIndex = 14
-        Me.Label9.Text = "Exception file count:"
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(525, 35)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(126, 13)
-        Me.Label10.TabIndex = 15
-        Me.Label10.Text = "Verify count by one only: "
+        Me.Label9.Text = "Dir Count"
         '
         'Label11
         '
@@ -207,7 +197,6 @@ Partial Class HASCopyBETA
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(708, 164)
         Me.Controls.Add(Me.Label11)
-        Me.Controls.Add(Me.Label10)
         Me.Controls.Add(Me.Label9)
         Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Label8)
@@ -246,7 +235,6 @@ Partial Class HASCopyBETA
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
     Friend WithEvents Button5 As System.Windows.Forms.Button
     Friend WithEvents Label9 As System.Windows.Forms.Label
-    Friend WithEvents Label10 As System.Windows.Forms.Label
     Friend WithEvents Label11 As System.Windows.Forms.Label
 
 End Class

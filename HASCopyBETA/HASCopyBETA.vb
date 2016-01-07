@@ -44,6 +44,7 @@ Public Class HASCopyBETA
     Dim current_file As String
     Dim file_count As Double = 1.0
     Dim ex_file_count As Integer = 0
+    Dim dir_count As Double = 1.0
     Dim verify_by_1 As Integer = 0
 
     Private Sub Source_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -60,12 +61,18 @@ Public Class HASCopyBETA
         If DialogResult.Cancel Then
             Return
         End If
+    End Sub
 
-
-
-       
-
-
+    Sub GetDirectories(ByVal StartPath As String, ByRef DirectoryList As ArrayList)
+        Try
+            Dim DirList As New ArrayList
+            Dim Dirs() As String = Directory.GetDirectories(StartPath)
+            DirList.AddRange(Dirs)
+            For Each Dir As String In Dirs
+                GetDirectories(Dir, DirectoryList)
+            Next
+        Catch ex As Exception
+        End Try
     End Sub
 
     Private Sub Destionation_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -149,188 +156,210 @@ Public Class HASCopyBETA
 
     ' Recursively copy all files and subdirectories from the specified source to the specified 
     ' destination.
-    Private Shared Sub DirectoryCopy( _
+    Sub DirectoryCopy( _
         ByVal sourceDirName As String, _
         ByVal destDirName As String, _
         ByVal copySubDirs As Boolean)
 
-        ' Get the subdirectories for the specified directory. 
-        Dim dir As DirectoryInfo = New DirectoryInfo(sourceDirName)
-        Dim dirs As DirectoryInfo() = dir.GetDirectories()
-
-        If Not dir.Exists Then
-            Throw New DirectoryNotFoundException( _
-                "Source directory does not exist or could not be found: " _
-                + sourceDirName)
-        End If
-
-        ' If the destination directory doesn't exist, create it. 
-        If Not Directory.Exists(destDirName) Then
-            Directory.CreateDirectory(destDirName)
-        End If
-        ' Get the files in the directory and copy them to the new location. 
-        Dim files As FileInfo() = dir.GetFiles()
-        For Each file In files
-            Dim temppath As String = Path.Combine(destDirName, file.Name)
-            file.CopyTo(temppath, False)
-        Next file
-
-        ' If copying subdirectories, copy them and their contents to new location. 
-        If copySubDirs Then
-            For Each subdir In dirs
-                Dim temppath As String = Path.Combine(destDirName, subdir.Name)
-                DirectoryCopy(subdir.FullName, temppath, copySubDirs)
-            Next subdir
-        End If
-    End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-    Private Sub CopyDirectory(ByVal sourcePath As String, ByVal destPath As String)
-        '   This test worked
-        '   Test 1: was a test of directory size that should have copied 100% of the data succfully:: It did:: copied data size == source data size
-        '   Test 2: was test of a directory size that should not a have copied 100% files correctly, ie; the were paths tha where > than 255 character in length
-        '   |_>results: source data size:: 347MB ::: copied directory size:: 87MB. 
-        '
-        '   Next Steps: ensure that progress bar and files count are accurate
-        '               Correctly output failed files to a log
-        '               Print the log and convert to PDF when complete
-        '               Clean up other minor things
-        '       ***look into runtime****: 347 MB took ~5 MINS:::to slow
-        '
-
-        If Not Directory.Exists(destPath) Then
-            Directory.CreateDirectory(destPath)
-        End If
         Try
-            For Each dir1 As String In Directory.GetDirectories(sourcePath)
+            If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
+                MsgBox("Copy Complete")
+                writer.WriteLine(list)
+                writer.WriteLine("Testing end of copy")
+                writer.Close()
+                Return
+            End If
 
+            ' Get the subdirectories for the specified directory. 
+            Dim dir As DirectoryInfo = New DirectoryInfo(sourceDirName)
+            Dim dirs As DirectoryInfo() = dir.GetDirectories()
 
+            If Not dir.Exists Then
+                Throw New DirectoryNotFoundException( _
+                    "Source directory does not exist or could not be found: " _
+                    + sourceDirName)
+            End If
 
-                Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
-
-
-                If destdir.Length > 240 Then
-
-
-                    For Each file1 As String In Directory.GetFiles(dir1)
-                        'Add file to failed copy list__> to ling to be a successful copy
-
-                        file_count = file_count + 1
-                        Label10.Text = file_count
-                        Label10.Refresh()
-                    Next
-
-
-                End If
-                CopyDirectory(dir1, destdir)
-            Next
-
-
-            For Each file1 As String In Directory.GetFiles(sourcePath)
-                file_count = file_count + 1
-                Label10.Text = file_count
-                Label10.Refresh()
-                Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
-                If dest.Length > 240 Then
+            ' If the destination directory doesn't exist, create it. 
+            If Not Directory.Exists(destDirName) Then
+                Directory.CreateDirectory(destDirName)
+            End If
+            If destDirName.Length > 248 Then
+                Dim failedFiles As FileInfo() = dir.GetFiles()
+                For Each file In failedFiles
+                    'For Each file1 As String In Directory.GetFiles(dir1)
+                    'Add file to failed copy list__> to ling to be a successful copy
+                    list = list + current_file + Environment.NewLine
                     file_count = file_count + 1
-                    Label10.Text = file_count
-                    Label10.Refresh()
-
+                    Label6.Text = file_count
+                    Label6.Refresh()
+                    Label4.Text = file.ToString
+                    Label4.Refresh()
+                    temp = target_size
+                    tot_prog = Math.Round((file_count / source_size), 2) * 100
+                    Label11.Text = "Source Size: " & source_size
+                    Label11.Refresh()
+                    ProgressBar1.Value = tot_prog
+                    Label6.Text = "Total file count: " & file_count.ToString
+                    Label6.Refresh()
+                Next file
+            End If
+            ' Get the files in the directory and copy them to the new location. 
+            Dim files As FileInfo() = dir.GetFiles()
+            For Each file In files
+                If file.Length > 260 Then
+                    list = list + current_file + Environment.NewLine
+                    file_count = file_count + 1
+                    Label6.Text = file_count
+                    Label6.Refresh()
+                    Label4.Text = file.ToString
+                    Label4.Refresh()
+                    temp = target_size
+                    tot_prog = Math.Round((file_count / source_size), 2) * 100
+                    Label11.Text = "Source Size: " & source_size
+                    Label11.Refresh()
+                    ProgressBar1.Value = tot_prog
+                    Label6.Text = "Total file count: " & file_count.ToString
+                    Label6.Refresh()
                 End If
+                Dim temppath As String = Path.Combine(destDirName, file.Name)
+                file.CopyTo(temppath, False)
+            Next file
 
-                File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
-                Label4.Text = file1.ToString
-                Label4.Refresh()
-                temp = target_size
-                tot_prog = Math.Round((file_count / source_size), 2) * 100
+            ' If copying subdirectories, copy them and their contents to new location. 
+            If copySubDirs Then
+                For Each subdir In dirs
+                    Dim temppath As String = Path.Combine(destDirName, subdir.Name)
+                    DirectoryCopy(subdir.FullName, temppath, copySubDirs)
+                Next subdir
+            End If
 
-                Label11.Text = "Source Size: " & source_size
-                Label11.Refresh()
-                ProgressBar1.Value = tot_prog
-                If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
-                    MsgBox("Copy Complete")
-                    writer.Close()
-                    'output the failed files to document
-                End If
-                Label6.Text = "Total file count: " & file_count.ToString
-                Label6.Refresh()
-
-                Label5.Text = tot_prog & " % Complete"
-                Label5.Refresh()
-                System.Threading.Thread.Sleep(200)
-
-
-
-
-
-
-            Next
-
-
-
-
-
-
-            ' Next
-            'Attempts to catch the error from any issue in copy a file ands it to a Text File
-            'currently does not work
-        Catch ex As Exception 'When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
-            ' verify_by_1 = verify_by_1 + 1
-            ' Label10.Text = "Verify count by one only: " & verify_by_1
-            ' Label10.Refresh()
-            file_count = file_count + 1
-            Label10.Text = file_count
-            Label10.Refresh()
-
-
-
-            ' ex_file_count = ex_file_count + 1
-
-            'list = list + current_file + Environment.NewLine
-            'writer.WriteLine(list)
-
-
-
-
-            'Label9.Text = "Exception file count totatl: " & ex_file_count.ToString
-            ' Label9.Refresh()
-
-
-            'Label11.Text = "Source Size: " & source_size
-            'Label11.Refresh()
-
-
-
-
-
-
-
-
-
-
-            'My.Application.Log.WriteException(e, TraceEventType.Error, filepath & ".")
-            ' IO.File.AppendAllText(filepath, String.Format("{0}{1}", Environment.NewLine, e.ToString()))
-            'MsgBox(e)
-            'Dim error_file As Byte() = New UTF8Encoding(True).GetBytes(file1.ToString())
-            'fs.Write(error_file, 0, error_file.Length)
-            ' fs.Close()
+        Catch ex As Exception
+            MsgBox(ex.ToString)
 
         End Try
-
-
-
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub CopyDirectory(ByVal sourcePath As String, ByVal destPath As String)
+
+
+
+
+    '   This test worked
+    '   Test 1: was a test of directory size that should have copied 100% of the data succfully:: It did:: copied data size == source data size
+    '   Test 2: was test of a directory size that should not a have copied 100% files correctly, ie; the were paths tha where > than 255 character in length
+    '   |_>results: source data size:: 347MB ::: copied directory size:: 87MB. 
+    '
+    '   Next Steps: ensure that progress bar and files count are accurate
+    '               Correctly output failed files to a log
+    '               Print the log and convert to PDF when complete
+    '               Clean up other minor things
+    '       ***look into runtime****: 347 MB took ~5 MINS:::to slow
+    '
+
+
+
+
+    ' If Not Directory.Exists(destPath) Then
+    '   Directory.CreateDirectory(destPath)
+    'End If
+    ' Try
+    '  For Each dir1 As String In Directory.GetDirectories(sourcePath)
+    'Dim destdir As String = Path.Combine(destPath, Path.GetFileName(dir1))
+
+    ' If destdir.Length > 254 Then
+    ' For Each file1 As String In Directory.GetFiles(dir1)
+    'Add file to failed copy list__> to ling to be a successful copy
+    'list = list + current_file + Environment.NewLine
+    ' file_count = file_count + 1
+    ' Next
+    ' End If
+    ' CopyDirectory(dir1, destdir)
+    ' Next
+
+
+    '  For Each file1 As String In Directory.GetFiles(sourcePath)
+    'list = list + current_file + Environment.NewLine
+    '  file_count = file_count + 1
+    ' Label6.Text = file_count
+    ' Label6.Refresh()
+    ' Dim dest As String = Path.Combine(destPath, Path.GetFileName(file1))
+    'If dest.Length > 254 Then
+    '  list = list + current_file + Environment.NewLine
+    ' file_count = file_count + 1
+    ' Label6.Text = file_count
+    '  Label6.Refresh()
+
+    'End If
+
+    ' File.Copy(file1, dest, True)  ' Added True here to force the an overwrite
+    'Label4.Text = file1.ToString
+    'Label4.Refresh()
+    ' temp = target_size
+    ' tot_prog = Math.Round((file_count / source_size), 2) * 100
+
+    ' Label11.Text = "Source Size: " & source_size
+    '  Label11.Refresh()
+    '  ProgressBar1.Value = tot_prog
+    ' Label6.Text = "Total file count: " & file_count.ToString
+    ' Label6.Refresh()
+
+
+    ' If (ProgressBar1.Value = 100 And file_count = source_size) Or (ProgressBar1.Value = 100 And (file_count + ex_file_count) = source_size) Then
+    ' MsgBox("Copy Complete")
+    '  writer.WriteLine(list)
+    '  writer.WriteLine("Testing end of copy")
+    '  writer.Close()
+    'output the failed files to document
+    'End If
+    ' Label6.Text = "Total file count: " & file_count.ToString
+    ' Label6.Refresh()
+
+    ''Label5.Text = tot_prog & " % Complete"
+    ' Label5.Refresh()
+    'System.Threading.Thread.Sleep(200)
+
+    '   Next
+
+
+
+
+
+
+    ' Next
+    'Attempts to catch the error from any issue in copy a file ands it to a Text File
+    'currently does not work
+    ' Catch ex As Exception 'When TypeOf ex Is NullReferenceException OrElse TypeOf ex Is PathTooLongException
+    ' verify_by_1 = verify_by_1 + 1
+    ' Label10.Text = "Verify count by one only: " & verify_by_1
+    ' Label10.Refresh()
+    'file_count = file_count + 1
+    ' Label6.Text = file_count
+    'Label6.Refresh()
+    'My.Application.Log.WriteException(e, TraceEventType.Error, filepath & ".")
+    ' IO.File.AppendAllText(filepath, String.Format("{0}{1}", Environment.NewLine, e.ToString()))
+    'MsgBox(e)
+    'Dim error_file As Byte() = New UTF8Encoding(True).GetBytes(file1.ToString())
+    'fs.Write(error_file, 0, error_file.Length)
+    ' fs.Close()
+
+    'End Try
+
+
+
+    'End Sub
     Private Function CountFiles(InFolder As String, ByRef Result As Double)
         Result += IO.Directory.GetFiles(InFolder).Count
 
@@ -391,7 +420,7 @@ Public Class HASCopyBETA
 
         Catch exx As Exception
 
-         
+
             Return 0
 
         End Try
@@ -408,12 +437,12 @@ Public Class HASCopyBETA
         Label5.Text = tot_prog & " % Complete"
 
 
-      
+
     End Sub
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e2 As DoWorkEventArgs) Handles BackgroundWorker1.DoWork
         'Process.Start("CMD", "/c cd  " + source + " & start cmd.exe /c Robocopy " + """" + source + """" + " " + """" + target + """" + " /LOG+:log.txt" + " /S /TEE")
-        CopyDirectory(source, target)
+        DirectoryCopy(source, target, True)
         'Copy(source, target)
         '' any cleanup code go here
         '' ensure that you close all open resources before exitting out of this Method.
@@ -429,9 +458,9 @@ Public Class HASCopyBETA
 
 
 
-      
+
     End Sub
-  
+
     Private Sub cancelAsyncButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
 
         ' Cancel the asynchronous operation. 
@@ -442,9 +471,4 @@ Public Class HASCopyBETA
 
     End Sub
 
-
-
-    Private Sub Label11_Click(sender As Object, e As EventArgs) Handles Label11.Click
-
-    End Sub
 End Class
