@@ -178,9 +178,9 @@ Partial Class HASCopyBETA
         Me.Label9.AutoSize = True
         Me.Label9.Location = New System.Drawing.Point(525, 9)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(51, 13)
+        Me.Label9.Size = New System.Drawing.Size(84, 13)
         Me.Label9.TabIndex = 14
-        Me.Label9.Text = "Dir Count"
+        Me.Label9.Text = "Target Path Len"
         '
         'Label11
         '
